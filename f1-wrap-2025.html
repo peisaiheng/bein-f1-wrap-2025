@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>2025 F1 Season Wrap</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;700;800&family=League+Spartan:wght@800;900&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            /* Color Palette */
+            --color-bg-darker: #050505;
+            --color-bg-dark: #111111;
+            --color-f1-red: #E10600;
+            --color-f1-red-glow: rgba(225, 6, 0, 0.4);
+            --color-f1-yellow: #FFDF0B;
+            --color-white: #FFFFFF;
+            --color-grey: #A0A0A0;
+
+            /* Typography */
+            --font-heading: 'League Spartan', sans-serif;
+            --font-body: 'Albert Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--color-bg-darker);
+            color: var(--color-white);
+            font-family: var(--font-body);
+            overflow: hidden;
+            /* Prevent iOS rubber banding */
+            overscroll-behavior-y: none;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Top Bar / Close Button */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 24px;
+            display: flex;
+            justify-content: flex-end;
+            z-index: 100;
+            pointer-events: none;
+            /* Let clicks pass through except on btn */
+        }
+
+        .skip-btn {
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-white);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: var(--font-body);
+            font-weight: 800;
+            font-size: 13px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .skip-btn:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.95);
+        }
+
+        /* Pagination Dots */
+        .pagination {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dot.active {
+            background: var(--color-f1-yellow);
+            height: 24px;
+            border-radius: 4px;
+            box-shadow: 0 0 8px rgba(255, 223, 11, 0.4);
+        }
+
+        /* Scroll Container (Snap Logic) */
+        .scroll-container {
+            height: 100vh;
+            height: 100dvh;
+            /* For mobile browsers with dynamic UI */
+            width: 100vw;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Slide Styles */
+        .slide {
+            height: 100vh;
+            height: 100dvh;
+            width: 100vw;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px 30px 100px 30px;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--color-bg-darker);
+        }
+
+        /* Dark Gradient & Carbon Textures */
+        .carbon-texture {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+                linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+                linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+                linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+                linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+                linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424 100%),
+                #131313;
+            background-size: 20px 20px;
+            opacity: 0.3;
+            z-index: 1;
+            mix-blend-mode: multiply;
+        }
+
+        .gradient-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, var(--color-bg-darker) 0%, rgba(5, 5, 5, 0.7) 40%, rgba(5, 5, 5, 0.2) 100%);
+            z-index: 2;
+        }
+
+        .slide-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            filter: grayscale(20%) contrast(1.1);
+        }
+
+        .video-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            filter: grayscale(20%) contrast(1.1);
+        }
+
+        /* Content Styling */
+        .content {
+            position: relative;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition-delay: 0.2s;
+            max-width: 400px;
+        }
+
+        .slide.is-visible .content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .subtitle {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--color-f1-yellow);
+            margin-bottom: 12px;
+            display: inline-block;
+            background: rgba(255, 223, 11, 0.1);
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .title {
+            font-family: var(--font-heading);
+            font-size: 48px;
+            line-height: 0.9;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            color: var(--color-white);
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            word-wrap: break-word;
+        }
+
+        .title.red {
+            color: var(--color-f1-red);
+            text-shadow: 0 0 20px var(--color-f1-red-glow);
+        }
+
+        .title.yellow {
+            color: var(--color-f1-yellow);
+            text-shadow: 0 0 20px rgba(255, 223, 11, 0.3);
+        }
+
+        .title.gold {
+            color: #FFD700;
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            font-size: 64px;
+        }
+
+        .desc {
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--color-f1-red);
+            padding: 16px 20px;
+            margin-top: 24px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .stat-box.yellow-accent {
+            border-left-color: var(--color-f1-yellow);
+        }
+
+        .stat-number {
+            font-family: var(--font-heading);
+            font-size: 42px;
+            color: var(--color-white);
+            line-height: 1;
+        }
+
+        .stat-number.yellow {
+            color: var(--color-f1-yellow);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 6px;
+            color: var(--color-grey);
+        }
+
+        .trophy-box {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            padding: 30px 20px;
+            margin-top: 30px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        .trophy-stat {
+            font-family: var(--font-heading);
+            font-size: 64px;
+            color: #FFD700;
+            line-height: 1;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .trophy-subtext {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            color: var(--color-white);
+            opacity: 0.9;
+        }
+
+        /* Scroll indicator / Arrow */
+        .arrow-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            animation: bounce 2.5s infinite;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            opacity: 0;
+            transition: opacity 0.5s ease 0.8s;
+        }
+
+        .slide.is-visible .arrow-down {
+            opacity: 1;
+        }
+
+        .arrow-down svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: var(--color-white);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translate(-50%, 0);
+            }
+
+            40% {
+                transform: translate(-50%, -10px);
+            }
+
+            60% {
+                transform: translate(-50%, -5px);
+            }
+        }
+
+        /* CTA Button (Last screen) */
+        .cta-btn {
+            display: inline-block;
+            background: var(--color-f1-red);
+            color: var(--color-white);
+            padding: 16px 32px;
+            font-family: var(--font-body);
+            font-weight: 800;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 30px;
+            margin-top: 30px;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            transition: transform 0.2s ease, background 0.2s ease;
+            box-shadow: 0 8px 20px var(--color-f1-red-glow);
+        }
+
+        .cta-btn:active {
+            transform: scale(0.96);
+            background: #cc0500;
+        }
+
+        /* Smaller screens adjustment */
+        @media (max-width: 375px) {
+            .title {
+                font-size: 44px;
+            }
+
+            .content {
+                padding-right: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Global Top Bar -->
+    <div class="top-bar">
+        <!-- data-skip-slideNumber is actively updated via JS for tracking -->
+        <button class="skip-btn" onclick="closeBrazeMessage()" data-skip-slideNumber="1">Skip</button>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+
+    <!-- Main Scroll Container -->
+    <main class="scroll-container">
+
+        <!-- Slide 1: Cover -->
+        <section class="slide is-visible">
+            <video class="video-bg" playsinline autoplay muted loop>
+                <source src="https://wsc-sports.video/h3kt0" type="video/mp4">
+            </video>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">Fueling the Passion</span>
+                <h1 class="title">Your F1® 2025 Season Wrap</h1>
+                <p class="desc">Before we head Down Under. Here's a look back at the moments that defined your 2025
+                    season.</p>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 2: Driver Move -->
+        <section class="slide">
+            <video class="video-bg" playsinline autoplay muted loop>
+                <source src="https://wsc-sports.video/ukb3e" type="video/mp4">
+            </video>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">Total Streaming Hours</span>
+                <h1 class="title red" id="hours-counter" data-target="1185000">0</h1>
+                <p class="desc">hours of Formula 1® streamed by fans like you. That's over 54.1 million laps around
+                    Monza at Max Verstappen's 2025 record-breaking pole position pace.</p>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 3: Championship Battle -->
+        <section class="slide">
+            <video class="video-bg" playsinline autoplay muted loop>
+                <source src="https://wsc-sports.video/e9mn8" type="video/mp4">
+            </video>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">THE FULL GRID</span>
+                <h1 class="title">64%</h1>
+                <p class="desc">of the community never missed a beat. You clocked the "Perfect Weekend" every single
+                    time - FP, Sprints, and Qualifying included. That's elite-level dedication.</p>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 4: Race Highlight -->
+        <section class="slide">
+            <video class="video-bg" playsinline autoplay muted loop>
+                <source src="https://wsc-sports.video/8jqi5" type="video/mp4">
+            </video>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">Most Watched</span>
+                <h1 class="title">Abu Dhabi<br>Grand Prix</h1>
+                <p class="desc">The epic conclusion to the three-way title fight. And we were there for it!</p>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 5: Rookies -->
+        <section class="slide">
+            <video class="video-bg" playsinline autoplay muted loop>
+                <source src="https://wsc-sports.video/zaq7o" type="video/mp4">
+            </video>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle" style="margin-bottom: 20px;">Average Watch time per user</span>
+                <span class="subtitle title"
+                    style="font-size: 24px; margin-bottom: 8px; font-family: var(--font-heading); background: none; padding: 0;">Singapore</span>
+                <h1 class="title">754 MINS</h1>
+                <p class="desc">That's enough time to travel from Jurong to Changi and back... 12 times.</p>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 6: User Stats -->
+        <section class="slide">
+            <video class="video-bg" playsinline autoplay muted loop>
+                <source src="https://wsc-sports.video/3d9et" type="video/mp4">
+            </video>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">Your Commitment</span>
+                <h1 class="title">Mastering <br> Every Apex</h1>
+                <p class="desc">You lived every lap and analyzed every move of the 2025 season.</p>
+
+                <div class="stat-box yellow-accent">
+                    <div class="stat-number yellow">21/24</div>
+                    <div class="stat-label">Races Streamed</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">2055 MINS</div>
+                    <div class="stat-label">Live Action Watched</div>
+                </div>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 7: Grand Finale -->
+        <section class="slide">
+            <video class="video-bg" playsinline autoplay muted loop>
+                <source src="https://wsc-sports.video/h3kt0" type="video/mp4">
+            </video>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content" style="max-width: 100%; text-align: center; transform: translateY(40px);">
+                <span class="subtitle" style="background: none; color: var(--color-white);">You Are</span>
+                <h1 class="title gold">WORLD<br>CHAMPION</h1>
+                <p class="desc" style="margin: 0 auto 20px auto; max-width: 300px;"> You own the track. 2025 was your
+                    season of dominance.</p>
+
+                <div class="trophy-box">
+                    <div class="trophy-stat">TOP 5%</div>
+                    <div class="trophy-subtext">On beIN SPORTS CONNECT</div>
+                </div>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 8: Outro -->
+        <section class="slide">
+            <div class="slide-bg"
+                style="background-image: url('https://images.unsplash.com/photo-1532906180595-df78cfeb503c?auto=format&fit=crop&q=80&w=1080'); filter: grayscale(20%) contrast(1.2);">
+            </div>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">The Future is Now</span>
+                <h1 class="title">Ready For<br>2026?</h1>
+                <p class="desc">New aerodynamic regulations. 100% sustainable fuels. A whole new era of Formula 1
+                    awaits.</p>
+
+                <button class="cta-btn" onclick="closeBrazeMessage()">Lights Out Soon</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript block -->
+    <script>
+        // 1. Close Window Logic (Braze specific)
+        function closeBrazeMessage() {
+            if (window.brazeBridge) {
+                // Native App environment
+                brazeBridge.closeMessage();
+            } else {
+                // Fallback for browser testing
+                document.documentElement.remove();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.scroll-container');
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            const skipBtn = document.querySelector('.skip-btn');
+            const arrows = document.querySelectorAll('.arrow-down');
+
+            // 2. Intersection Observer to detect which slide is active
+            const observerOptions = {
+                root: container,
+                rootMargin: '0px',
+                threshold: 0.6 // Slide becomes active when 60% visible
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const index = Array.from(slides).indexOf(entry.target);
+
+                        // Add animation class
+                        entry.target.classList.add('is-visible');
+
+                        // Update pagination
+                        dots.forEach(dot => dot.classList.remove('active'));
+                        if (dots[index]) {
+                            dots[index].classList.add('active');
+                        }
+
+                        // Update skip tracking attribute
+                        skipBtn.setAttribute('data-skip-slideNumber', index + 1);
+
+                        // If last slide, change Skip to Close
+                        if (index === slides.length - 1) {
+                            skipBtn.textContent = 'Close';
+                            // Optionally hide pagination on last slide
+                            document.querySelector('.pagination').style.opacity = '0';
+                        } else {
+                            skipBtn.textContent = 'Skip';
+                            document.querySelector('.pagination').style.opacity = '1';
+                        }
+
+                        // Animate counter if we are on slide 2 (index 1) and it hasn't animated yet
+                        if (index === 1) {
+                            const counter = document.getElementById('hours-counter');
+                            if (counter && !counter.classList.contains('animated')) {
+                                counter.classList.add('animated');
+                                animateCounter(counter);
+                            }
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            slides.forEach(slide => observer.observe(slide));
+
+            // 3. Arrow Down Click Navigation
+            arrows.forEach((arrow, index) => {
+                arrow.addEventListener('click', () => {
+                    if (slides[index + 1]) {
+                        // Use smooth scrolling native behavior configured in CSS
+                        slides[index + 1].scrollIntoView();
+                    }
+                });
+            });
+
+            // 4. Counter Animation Function
+            function animateCounter(element) {
+                const target = +element.getAttribute('data-target');
+                const duration = 2000; // Animation duration in ms
+                const start = 0;
+                let startTime = null;
+
+                function animation(currentTime) {
+                    if (startTime === null) startTime = currentTime;
+                    const timeElapsed = currentTime - startTime;
+                    const r = Math.min(timeElapsed / duration, 1);
+
+                    // Use easeOutExponetial approach for a rolling counter feel
+                    const easeOutQuad = r === 1 ? 1 : 1 - Math.pow(2, -10 * r);
+                    const currentVal = Math.floor(easeOutQuad * (target - start) + start);
+
+                    element.innerHTML = currentVal.toLocaleString();
+
+                    if (timeElapsed < duration) {
+                        requestAnimationFrame(animation);
+                    } else {
+                        element.innerHTML = target.toLocaleString();
+                    }
+                }
+
+                requestAnimationFrame(animation);
+            }
+        });
+    </script>
+</body>
+
+</html>

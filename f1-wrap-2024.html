@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>beIN SPORTS CONNECT - Your F1 Year-in-review</title>
+
+    <!-- font links  -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Albert+Sans&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@800&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            /* font settings  */
+            --font-header-size: 5.6rem;
+            --font-header-lineHeight: 5.6rem;
+            --font-header-family: "League Spartan", sans-serif;
+
+            --font-paragraph-size: 2rem;
+            --font-paragraph-family: "Albert Sans", sans-serif;
+
+            --font-weight-extrabold: 800;
+            --font-weight-bold: 700;
+            --font-weight-normal: 400;
+
+            /* color settings */
+            --color-bg-primary: linear-gradient(180deg, #332345 1.6%, #221232 100%);
+            --color-white-primary: #ffffff;
+            --color-purple-primary: #5c2d91;
+            --color-dark-purple-primary: #1c0d2b;
+            --color-grey-primary: #4a4f54;
+            --color-light-purple-primary: #9866d0;
+            --color-yellow-primary: #ffdf0b;
+
+            /* screen display settings */
+            --screen-mobile-width: 37.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            box-sizing: border-box;
+            font-size: 100%;
+            font: inherit;
+        }
+
+        article,
+        aside,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        menu,
+        nav,
+        section {
+            display: block;
+        }
+
+        html {
+            font-size: 62.5%;
+        }
+
+        body {
+            line-height: 1;
+            width: 100%;
+            height: 100%;
+            font-family: var(--font-paragraph-family);
+            background: var(--color-bg-primary);
+        }
+
+        ol,
+        ul {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button {
+            outline: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        #main {
+            background: var(--color-bg-primary);
+            min-width: 100vw;
+            min-height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* styles for template 5 for upper background image */
+        .background-image__container {
+            height: 35%;
+            max-height: 35rem;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Styles for image-cards (for template 3) */
+        .image-cards__container {
+            width: 90%;
+            height: 27%;
+            display: flex;
+            position: absolute;
+            top: 2.8rem;
+            left: 2.5rem;
+        }
+
+        .image-card {
+            width: 32%;
+            height: 100%;
+            transform: skewX(-5deg);
+            border: 1px solid #000;
+            position: relative;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .image-card--2 {
+            top: 3.6rem;
+        }
+
+        .image-card--3 {
+            top: 6rem;
+        }
+
+        /* styles for cards gallery container (for template 4) */
+        .cards-gallery__contanier {
+            width: 100%;
+            position: absolute;
+            top: 3.5rem;
+            left: -5%;
+            padding: 0 3rem;
+            height: 35%;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            border-radius: 1rem;
+            overflow: hidden;
+            position: absolute;
+            background-color: var(--color-dark-purple-primary);
+        }
+
+        .card--1 {
+            width: 50%;
+            height: 75%;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            border-radius: 0.75rem;
+        }
+
+        .card--2 {
+            box-shadow: 0 753px 211px rgba(0, 0, 0, 0.01),
+                0 482px 193px rgba(0, 0, 0, 0.09), 0 10px 50px rgba(0, 0, 0, 0.31),
+                0 120px 120px rgba(0, 0, 0, 0.53), 0 30px 66px rgba(0, 0, 0, 0.61),
+                0 0 0 rgba(0, 0, 0, 0.62);
+            width: 50%;
+            height: 100%;
+            position: absolute;
+            left: 54%;
+            top: 1%;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+
+        .card--3 {
+            width: 50%;
+            height: 75%;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            border-radius: 0.75rem;
+            right: 0;
+        }
+
+        .card .card__image-cover {
+            height: 45%;
+            width: 100%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .card .card__content {
+            height: 55%;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card--1 .card__content,
+        .card--3 .card__content {
+            opacity: 0.6;
+        }
+
+        .card__content .date {
+            font-size: 0.8rem;
+            line-height: 1.2rem;
+            font-weight: var(--font-weight-extrabold);
+            color: var(--color-white-primary);
+            display: block;
+            margin-top: 1.5rem;
+        }
+
+        .card__content .caption {
+            margin-top: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: var(--font-weight-extrabold);
+            color: var(--color-white-primary);
+            line-height: 1.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        .card__content .description {
+            color: var(--color-yellow-primary);
+            font-size: 0.8rem;
+            line-height: 1.2rem;
+            margin-top: 0.5rem;
+            font-weight: var(--font-weight-extrabold);
+            height: 75%;
+            max-height: 4.9rem;
+            overflow: hidden;
+        }
+
+        .card--1 .card__content .description,
+        .card--3 .card__content .description {
+            height: 1.3rem;
+            line-height: 1.5rem;
+        }
+
+        .card__content .description::-webkit-scrollbar {
+            display: none;
+        }
+
+        .card__add-button__wrapper {
+            position: absolute;
+            bottom: -0.2rem;
+            right: 0;
+        }
+
+        .card--1 .card__add-button__wrapper,
+        .card--3 .card__add-button__wrapper {
+            opacity: 0.6;
+        }
+
+        /* styles for swiper container */
+        .vertical-swiper__slide-container {
+            display: flex;
+            flex-direction: column;
+            max-height: 100vh;
+            max-width: 460px;
+            margin: 0 auto;
+            transition: transform 0.6s ease;
+            transform: translateY(0);
+        }
+
+        .vertical-swiper__slide {
+            width: 100%;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-end;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.8s ease-out;
+            overflow: hidden;
+        }
+
+        .vertical-swiper__slide__bg-mask {
+            width: 100%;
+            height: 50%;
+            position: absolute;
+            bottom: 0;
+            background-image: linear-gradient(180.02deg,
+                    rgba(0, 0, 0, 0) 0.02%,
+                    #000000 70.68%);
+            opacity: 0.8;
+            z-index: 30;
+        }
+
+        .vertical-swiper__slide.active {
+            opacity: 1;
+            transition: opacity 0.8s ease-in;
+        }
+
+        /* styles for swiper navigation */
+        .vertical-swiper__navigation {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: absolute;
+            top: 41%;
+            right: 25px;
+            z-index: 10;
+        }
+
+        .vertical-swiper__navigation__button {
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: var(--color-white-primary);
+            border-radius: 50%;
+        }
+
+        .vertical-swiper__navigation__button.active {
+            background-color: var(--color-yellow-primary) !important;
+        }
+
+        .vertical-swiper__next-button__wrapper {
+            cursor: pointer;
+            position: absolute;
+            bottom: 4rem;
+            right: 2.5rem;
+        }
+
+        @media (max-height: 650px) {
+            .vertical-swiper__next-button__wrapper {
+                bottom: 2.5rem;
+            }
+        }
+
+        .vertical-swiper__next-button__wrapper.disabled,
+        .vertical-swiper__prev-button__wrapper.disabled {
+            pointer-events: none;
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        /* styles for slide content */
+        .vertical-swiper__slide__content {
+            height: fit-content;
+            padding: 0 3rem 12rem;
+            position: relative;
+            z-index: 35;
+            opacity: 0;
+            transition: opacity 0.8s ease-out;
+            transition-delay: 0.3s;
+        }
+
+        .vertical-swiper__slide__content.active {
+            opacity: 1;
+            transition: opacity 0.8s ease-in 0.3s;
+        }
+
+        @media (max-height: 650px) {
+            .vertical-swiper__slide__content {
+                padding: 0 3rem 10rem;
+            }
+        }
+
+        .vertical-swiper__slide__content .caption {
+            font-size: var(--font-header-size);
+            font-weight: var(--font-weight-extrabold);
+            line-height: var(--font-header-lineHeight);
+            text-align: left;
+            font-family: var(--font-header-family);
+            color: var(--color-yellow-primary);
+            word-break: break-word;
+            text-transform: uppercase;
+            margin-bottom: 1.2rem;
+        }
+
+        @media (max-height: 650px) {
+            .vertical-swiper__slide__content .caption {
+                font-size: 4.5rem;
+                line-height: 4.5rem;
+            }
+        }
+
+        .vertical-swiper__slide__content .description {
+            font-size: var(--font-paragraph-size);
+            font-weight: var(--font-weight-normal);
+            color: var(--color-white-primary);
+            line-height: 150%;
+            word-break: break-word;
+        }
+
+        .home__skip-button {
+            cursor: pointer;
+            position: absolute;
+            right: 2.5rem;
+            top: 2.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 3rem;
+            color: var(--color-purple-primary);
+            background-color: var(--color-white-primary);
+            font-size: 1.2rem;
+            font-weight: var(--font-weight-bold);
+            text-transform: capitalize;
+            z-index: 40;
+        }
+
+        .bgvid {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+
+<body>
+    <main id="main">
+        <div class="vertical-swiper__navigation">
+            <button class="vertical-swiper__navigation__button" data-slidenumber="1"></button>
+            <button class="vertical-swiper__navigation__button" data-slidenumber="2"></button>
+            <button class="vertical-swiper__navigation__button" data-slidenumber="3"></button>
+            <button class="vertical-swiper__navigation__button" data-slidenumber="4"></button>
+            <button class="vertical-swiper__navigation__button" data-slidenumber="5"></button>
+            <button class="vertical-swiper__navigation__button" data-slidenumber="6"></button>
+        </div>
+        <div class="vertical-swiper__slide-container">
+            <!--NOTE: Replace background-image url with any url -->
+            <section class="vertical-swiper__slide" style="
+            background-image: url('https://braze-images.com/appboy/communication/assets/image_assets/images/6785d12371b7d5006375a3dd/original.png?1736823073');
+          " data-template="1">
+                <video playsinline autoplay muted loop poster="video_cover_1.png" class="bgvid">
+                    <source
+                        src="https://braze-images.com/appboy/communication/assets/image_assets/images/6785d12371b7d5006375a3dd/original.png?1736823073"
+                        type="video/mp4">
+                </video>
+                <!-- NOTE: use data-skip-slidNumber attribute to track on which slide number user left -->
+                <a class="home__skip-button" href="#" onclick="brazeBridge.closeMessage()"
+                    data-skip-slideNumber="1">Skip</a>
+                <div class="vertical-swiper__slide__bg-mask"></div>
+                <div class="vertical-swiper__slide__content">
+                    <p class="description">
+
+                        {{content_blocks.${AP_IAM_F1Wrapped_CoverScreenTitle1}}}
+
+                    </p>
+                    <h1 class="caption" style="text-transform: uppercase;">
+
+                        {{content_blocks.${AP_IAM_F1Wrapped_CoverScreenTitle2}}}
+                    </h1>
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1WrappedCover}}}
+                    </p>
+                </div>
+            </section>
+
+
+            <section class="vertical-swiper__slide" style="
+            background-image: url('https://editorsprodeus2.prod-cdn.clipro.tv/editor/0c81bb5a-c687-4dc6-a430-922ab0f90783.mp4');
+          " data-template="2">
+                <video playsinline autoplay muted loop poster="video_cover_1.png" class="bgvid">
+                    <source
+                        src="https://editorsprodeus2.prod-cdn.clipro.tv/editor/0c81bb5a-c687-4dc6-a430-922ab0f90783.mp4"
+                        type="video/mp4">
+                </video>
+                <!-- NOTE: use data-skip-slidNumber attribute to track on which slide number user left -->
+                <a class="home__skip-button" href="#" onclick="brazeBridge.closeMessage()"
+                    data-skip-slideNumber="2">Skip</a>
+                <div class="vertical-swiper__slide__bg-mask"></div>
+                <div class="vertical-swiper__slide__content">
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1Wrapped_PercentileTitle1}}}
+                    </p>
+                    <h1 class="caption" style="text-transform: uppercase;">
+                        {{canvas_entry_properties.${ranked_title}}}
+                    </h1>
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1Wrapped_PercentileBody}}} </p>
+                </div>
+            </section>
+
+            <section class="vertical-swiper__slide" style="
+            background-image: url('https://editorsprodeus2.prod-cdn.clipro.tv/editor/9219a4b1-22fd-4131-beef-746d65042f7a.mp4');
+          " data-template="3">
+                <video playsinline autoplay muted loop poster="video_cover_1.png" class="bgvid">
+                    <source
+                        src="https://editorsprodeus2.prod-cdn.clipro.tv/editor/9219a4b1-22fd-4131-beef-746d65042f7a.mp4"
+                        type="video/mp4">
+                </video>
+                <!-- NOTE: use data-skip-slidNumber attribute to track on which slide number user left -->
+                <a class="home__skip-button" href="#" onclick="brazeBridge.closeMessage()"
+                    data-skip-slideNumber="3">Skip</a>
+                <div class="vertical-swiper__slide__bg-mask"></div>
+                <div class="vertical-swiper__slide__content">
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1Wrapped_RacesWatchedTitle1}}} </p>
+                    <h1 class="caption">
+                        {{canvas_entry_properties.${races_watched}}}/24
+                        {{content_blocks.${AP_IAM_F1Wrapped_RacesWatchedTitle2}}}
+                    </h1>
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1Wrapped_RacesWatchedBody}}} </p>
+                </div>
+            </section>
+
+            <section class="vertical-swiper__slide" style="
+            background-image: url('https://editorsprodeus2.prod-cdn.clipro.tv/editor/4c0dea8c-81cd-4c2b-8dbc-d852c3cf6c97.mp4');
+          " data-template="4">
+                <video playsinline autoplay muted loop poster="video_cover_1.png" class="bgvid">
+                    <source
+                        src="https://editorsprodeus2.prod-cdn.clipro.tv/editor/4c0dea8c-81cd-4c2b-8dbc-d852c3cf6c97.mp4"
+                        type="video/mp4">
+                </video>
+                <!-- NOTE: use data-skip-slidNumber attribute to track on which slide number user left -->
+                <a class="home__skip-button" href="#" onclick="brazeBridge.closeMessage()"
+                    data-skip-slideNumber="4">Skip</a>
+                <div class="vertical-swiper__slide__bg-mask"></div>
+                <div class="vertical-swiper__slide__content">
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1Wrapped_RacesWatchedTitle1}}} </p>
+                    <h1 class="caption">
+                        {{canvas_entry_properties.${main_race}}}
+                        {{content_blocks.${AP_IAM_F1Wrapped_MinutesWatchedTitle1}}}
+                    </h1>
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1Wrapped_MinutesWatchedBody}}} </p>
+                </div>
+            </section>
+            <section class="vertical-swiper__slide" style="
+            background-image: url('https://editorsprodeus2.prod-cdn.clipro.tv/editor/8fdd1f86-54db-4321-a2d7-9225093f49bb.mp4');
+          " data-template="5">
+                <video playsinline autoplay muted loop poster="video_cover_1.png" class="bgvid">
+                    <source
+                        src="https://editorsprodeus2.prod-cdn.clipro.tv/editor/8fdd1f86-54db-4321-a2d7-9225093f49bb.mp4"
+                        type="video/mp4">
+                </video>
+                <!-- NOTE: use data-skip-slidNumber attribute to track on which slide number user left -->
+                <a class="home__skip-button" href="#" onclick="brazeBridge.closeMessage()"
+                    data-skip-slideNumber="5">Skip</a>
+                <div class="vertical-swiper__slide__bg-mask"></div>
+                <div class="vertical-swiper__slide__content">
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1Wrapped_MostWatchedRaceTitle1}}} </p>
+                    <h1 class="caption">
+                        MONACO
+                    </h1>
+
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1Wrapped_MostWatchedRaceBody}}}
+                    </p>
+                </div>
+            </section>
+            <section class="vertical-swiper__slide" style="
+            background-image: url('https://editorsprodeus2.prod-cdn.clipro.tv/editor/a28ec320-e5e4-40d3-aad3-6f24fa83f369.mp4');
+          " data-template="6">
+                <video playsinline autoplay muted loop poster="video_cover_1.png" class="bgvid">
+                    <source
+                        src="https://editorsprodeus2.prod-cdn.clipro.tv/editor/a28ec320-e5e4-40d3-aad3-6f24fa83f369.mp4"
+                        type="video/mp4">
+                </video>
+                <!-- NOTE: use data-skip-slidNumber attribute to track on which slide number user left -->
+                <a class="home__skip-button" href="#" onclick="brazeBridge.closeMessage()"
+                    data-skip-slideNumber="6">Skip</a>
+                <div class="vertical-swiper__slide__bg-mask"></div>
+                <div class="vertical-swiper__slide__content">
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1Wrapped_LastScreenTitle1}}}</p>
+                    <h1 class="caption">
+                        {{content_blocks.${AP_IAM_F1Wrapped_LastScreenTitle2}}}
+                    </h1>
+
+                    <p class="description">
+                        {{content_blocks.${AP_IAM_F1Wrapped_LastScreenBody}}}
+                    </p>
+                </div>
+            </section>
+            </section>
+        </div>
+        <div class="vertical-swiper__next-button__wrapper">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="30" r="30" fill="#5C2D91" />
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M19.6426 26.097L23.4843 22.1436L31.0711 29.951L38.658 22.1436L42.4997 26.097L31.0711 37.8578L19.6426 26.097Z"
+                    fill="white" />
+            </svg>
+        </div>
+    </main>
+    <script>
+        const slideContainer = document.querySelector(
+            ".vertical-swiper__slide-container"
+        );
+        const navigatioContainer = document.querySelector(
+            ".vertical-swiper__navigation"
+        );
+        const navigationButtons = document.querySelectorAll(
+            ".vertical-swiper__navigation__button"
+        );
+        const nextButton = document.querySelector(
+            ".vertical-swiper__next-button__wrapper"
+        );
+        const slides = document.querySelectorAll(".vertical-swiper__slide");
+
+        const skipButtons = document.querySelectorAll(".home__skip-button");
+        const mainPanel = document.getElementById("main");
+
+        function closeBrazeMessage() {
+            if (window.brazeBridge) brazeBridge.closeMessage();
+        }
+
+        function removeHtml() {
+            console.log("removeHtml");
+            document.documentElement.remove();
+        }
+
+        skipButtons.forEach((skipButton) =>
+            skipButton.addEventListener("click", () => {
+                removeHtml();
+            })
+        );
+
+        let currentSlideIndex = 0;
+        let startY,
+            endY,
+            distY,
+            threshold = 50; // Set the minimum distance required for a swipe gesture
+
+        slideContainer.addEventListener("touchstart", (e) => {
+            startY = e.touches[0].pageY;
+        });
+
+        slideContainer.addEventListener("touchmove", (e) => {
+            endY = e.touches[0].pageY;
+            distY = endY - startY;
+            if (Math.abs(distY) > threshold) {
+                e.preventDefault(); // Prevent scrolling
+            }
+        });
+
+        slideContainer.addEventListener("touchend", (e) => {
+            if (Math.abs(distY) > threshold) {
+                if (distY > 0 && currentSlideIndex > 0) {
+                    // Swipe down, go to previous slide
+                    currentSlideIndex--;
+                    moveSlide();
+                } else if (
+                    distY < 0 &&
+                    currentSlideIndex < navigationButtons.length - 1
+                ) {
+                    // Swipe up, go to next slide
+                    currentSlideIndex++;
+                    moveSlide();
+                } else if (currentSlideIndex === navigationButtons.length - 1) {
+                    closeBrazeMessage();
+                    removeHtml();
+                }
+            }
+        });
+        navigationButtons.forEach((navBtn) => {
+            navBtn.addEventListener("click", () => {
+                currentSlideIndex = parseInt(navBtn.dataset.slidenumber) - 1;
+                moveSlide();
+            });
+        });
+
+        nextButton.addEventListener("click", () => {
+            if (currentSlideIndex === navigationButtons.length - 1) {
+                closeBrazeMessage();
+                removeHtml();
+            } else {
+                currentSlideIndex++;
+                moveSlide();
+            }
+        });
+
+        function moveSlide() {
+            const position = -100 * currentSlideIndex;
+            const currentSlide = slides[currentSlideIndex];
+            const previousSlide = slides[currentSlideIndex - 1];
+            const nextSlide = slides[currentSlideIndex + 1];
+
+            if (currentSlide) {
+                const content = currentSlide.querySelector(
+                    ".vertical-swiper__slide__content"
+                );
+                currentSlide.classList.add("active");
+                content.classList.add("active");
+            }
+            if (previousSlide) {
+                const content = previousSlide.querySelector(
+                    ".vertical-swiper__slide__content"
+                );
+                previousSlide.classList.remove("active");
+                content.classList.remove("active");
+            }
+            if (nextSlide) {
+                const content = nextSlide.querySelector(
+                    ".vertical-swiper__slide__content"
+                );
+                nextSlide.classList.remove("active");
+                content.classList.remove("active");
+            }
+            slideContainer.style.transform = `translateY(${position}vh)`;
+            navigationButtons.forEach((navBtn) => {
+                if (parseInt(navBtn.dataset.slidenumber) - 1 === currentSlideIndex) {
+                    navBtn.classList.add("active");
+                } else {
+                    navBtn.classList.remove("active");
+                }
+            });
+        }
+        function toggleDisableNextButton() {
+            if (currentSlideIndex === navigationButtons.length - 1) {
+                nextButton.classList.add("disabled");
+            } else {
+                nextButton.classList.remove("disabled");
+            }
+        }
+        moveSlide();
+    </script>
+</body>
+
+</html>
