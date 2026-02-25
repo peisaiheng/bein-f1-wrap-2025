@@ -443,6 +443,37 @@
             fill: currentColor;
         }
 
+        /* Toast Notification */
+        .toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: rgba(22, 22, 22, 0.95);
+            color: var(--color-white);
+            text-align: center;
+            border-radius: 30px;
+            padding: 12px 20px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease, bottom 0.3s ease, visibility 0.3s ease;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
         /* Smaller screens adjustment */
         @media (max-width: 375px) {
             .title {
@@ -639,12 +670,15 @@
                 </div>
 
                 <div class="action-buttons">
-                    <button class="share-btn" onclick="downloadImage()">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                        </svg>
-                        Download Image
-                    </button>
+                    <a href="https://braze-images.com/appboy/communication/assets/image_assets/images/699e9db60473560063cc71b8/original.png?1772002741"
+                        target="_blank" style="text-decoration: none;">
+                        <button class="share-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                            </svg>
+                            Download Image
+                        </button>
+                    </a>
                     <button class="share-btn" onclick="shareNative()">
                         <svg viewBox="0 0 24 24">
                             <path
@@ -680,13 +714,16 @@
             </div>
         </section>
 
+        <!-- Toast UI -->
+        <div id="toast" class="toast"></div>
+
     </main>
 
     <!-- JavaScript block -->
     <script>
         // 1. Native Download Logic
         async function downloadImage() {
-            const imageUrl = 'https://braze-images.com/appboy/communication/assets/image_assets/images/699e981be3c6340063f2665e/original.png?1772001306';
+            const imageUrl = 'https://braze-images.com/appboy/communication/assets/image_assets/images/699e9db60473560063cc71b8/original.png?1772002741';
             const fileName = 'My-F1-Season-Wrap-2025.png'; // Make sure this matches the image type
 
             try {
@@ -728,23 +765,73 @@
             }
         }
 
+        // Helper to show custom toast message since alert() is blocked in some WebViews
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            if (toast) {
+                toast.innerText = message;
+                toast.classList.add("show");
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 3000);
+            }
+        }
+
         // 2. Native Share API
         async function shareNative() {
             const shareData = {
                 title: 'My 2025 F1 Season Wrap',
                 text: 'I was in the top 5% of fans this season on the beIN SPORTS CONNECT F1 Wrap! 🏎️🏆',
-                url: 'https://braze-images.com/appboy/communication/assets/image_assets/images/699e981be3c6340063f2665e/original.png?1772001306'
+                url: 'https://braze-images.com/appboy/communication/assets/image_assets/images/699e9db60473560063cc71b8/original.png?1772002741'
+            };
+
+            const executeFallbackCopy = () => {
+                try {
+                    // Try the modern clipboard API first
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(shareData.url).then(() => {
+                            showToast("Link copied to clipboard!");
+                        }).catch(() => fallbackExecCommand());
+                    } else {
+                        // Older execCommand fallback
+                        fallbackExecCommand();
+                    }
+                } catch (e) {
+                    console.error("Clipboard copy failed", e);
+                }
+            };
+
+            const fallbackExecCommand = () => {
+                try {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = shareData.url;
+                    // Move it off-screen
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-999999px";
+                    textArea.style.top = "-999999px";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showToast("Link copied to clipboard!");
+                } catch (e) {
+                    console.error("Exec fallback failed", e);
+                }
             };
 
             try {
+                // If the device supports natural sharing
                 if (navigator.share) {
                     await navigator.share(shareData);
                 } else {
-                    navigator.clipboard.writeText(shareData.url);
-                    alert("Link copied to clipboard!");
+                    executeFallbackCopy();
                 }
             } catch (err) {
-                console.error("Error sharing:", err);
+                console.error("Native share failed:", err);
+                // Braze webview might block navigator.share or the user might dismiss it resulting in an AbortError.
+                // We fallback to copying the link to the clipboard.
+                executeFallbackCopy();
             }
         }
 
