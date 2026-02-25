@@ -1,0 +1,27 @@
+# --- ANTIGRAVITY / AGENT CONTEXT ---
+# Keep the plans and task lists so the agent remembers what it's doing
+!/.agent/plans/
+!/.agent/tasks/
+!/.agent/instructions.md
+
+# Ignore the heavy "noise" and temporary runtime data
+.agent/logs/
+.agent/tmp/
+.agent/cache/
+.agent/sessions/*.json
+.agent/index/
+
+# --- IDE & SYSTEM ---
+# Antigravity (VS Code based) workspace settings
+.vscode/
+.antigravity/workspace-state/
+.history/
+*.log
+
+# --- ENVIRONMENT & SECRETS ---
+# NEVER sync your API keys or local environment variables
+.env
+.env.local
+.env.*.local
+auth.json
+*.pem
