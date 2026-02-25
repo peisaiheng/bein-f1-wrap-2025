@@ -403,6 +403,14 @@
         }
 
         /* Share Button (Screen 7) */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
         .share-btn {
             display: inline-flex;
             align-items: center;
@@ -417,7 +425,6 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             border-radius: 30px;
-            margin-top: 25px 0;
             cursor: pointer;
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(8px);
@@ -614,9 +621,9 @@
 
         <!-- Slide 7: Grand Finale -->
         <section class="slide">
-            <video class="video-bg" playsinline autoplay muted loop>
-                <source src="https://wsc-sports.video/3f0dz" type="video/mp4">
-            </video>
+            <div class="slide-bg"
+                style="background-image: url('https://braze-images.com/appboy/communication/assets/image_assets/images/699e9dc3ebc2c5006397e934/original.png?1772002754'); filter: grayscale(20%) contrast(1.2);">
+            </div>
             <div class="carbon-texture"></div>
             <div class="gradient-overlay"></div>
 
@@ -631,13 +638,21 @@
                     <div class="trophy-subtext">On beIN SPORTS CONNECT</div>
                 </div>
 
-                <button class="share-btn" onclick="shareStats()">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z" />
-                    </svg>
-                    Share Your Stats
-                </button>
+                <div class="action-buttons">
+                    <button class="share-btn" onclick="downloadImage()">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                        </svg>
+                        Download Image
+                    </button>
+                    <button class="share-btn" onclick="shareNative()">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z" />
+                        </svg>
+                        Share
+                    </button>
+                </div>
             </div>
 
             <div class="arrow-down">
@@ -669,8 +684,8 @@
 
     <!-- JavaScript block -->
     <script>
-        // 1. Native Share/Download Logic
-        async function shareStats() {
+        // 1. Native Download Logic
+        async function downloadImage() {
             const imageUrl = 'https://braze-images.com/appboy/communication/assets/image_assets/images/699e981be3c6340063f2665e/original.png?1772001306';
             const fileName = 'My-F1-Season-Wrap-2025.png'; // Make sure this matches the image type
 
@@ -713,7 +728,27 @@
             }
         }
 
-        // 2. Close Window Logic (Braze specific)
+        // 2. Native Share API
+        async function shareNative() {
+            const shareData = {
+                title: 'My 2025 F1 Season Wrap',
+                text: 'I was in the top 5% of fans this season on the beIN SPORTS CONNECT F1 Wrap! 🏎️🏆',
+                url: 'https://wsc-sports.video/spjro'
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    navigator.clipboard.writeText(shareData.url);
+                    alert("Link copied to clipboard!");
+                }
+            } catch (err) {
+                console.error("Error sharing:", err);
+            }
+        }
+
+        // 3. Close Window Logic (Braze specific)
         function closeBrazeMessage() {
             if (window.brazeBridge) {
                 // Native App environment
