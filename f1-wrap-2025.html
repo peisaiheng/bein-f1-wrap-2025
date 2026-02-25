@@ -669,64 +669,47 @@
 
     <!-- JavaScript block -->
     <script>
-        // 1. Native Share Logic
+        // 1. Native Share/Download Logic
         async function shareStats() {
             const imageUrl = 'https://wsc-sports.video/spjro';
-            const fileName = 'F1-Season-Wrap-2025.png'; // Make sure this matches the image type
+            const fileName = 'My-F1-Season-Wrap-2025.png'; // Make sure this matches the image type
 
             try {
-                // Fetch the image as a blob
-                const response = await fetch(imageUrl);
+                // Fetch the image as a blob to ensure we get the file locally first
+                const response = await fetch(imageUrl, {
+                    // Note: Depending on server config, 'no-cors' might prevent reading the blob properly.
+                    // If so, the fallback window.open will trigger. 
+                    mode: 'cors'
+                });
+
+                if (!response.ok) throw new Error("Network response was not ok");
+
                 const blob = await response.blob();
 
-                // Determine the correct MIME type based on the response, default to png if not sure
-                const contentType = response.headers.get('content-type') || 'image/png';
-                const file = new File([blob], fileName, { type: contentType });
+                // Create a temporary object URL for the blob
+                const tempUrl = URL.createObjectURL(blob);
 
-                const shareData = {
-                    title: 'My 2025 F1 Season Wrap',
-                    text: 'I was in the top 5% of fans this season on the beIN SPORTS CONNECT F1 Wrap! 🏎️🏆',
-                    files: [file]
-                };
+                // Create an invisible anchor element to trigger the download
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = tempUrl;
+                a.download = fileName; // The download attribute forces the browser to save it
 
-                // Check if sharing files is supported
-                if (navigator.canShare && navigator.canShare(shareData)) {
-                    await navigator.share(shareData);
-                } else {
-                    // Fallback: trigger a direct download of the image
-                    downloadImage(blob, fileName);
-                }
+                document.body.appendChild(a);
+                a.click(); // Trigger the download
+
+                // Keep the document clean
+                window.setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(tempUrl);
+                }, 100);
+
             } catch (err) {
-                console.error("Error sharing or fetching image:", err);
-                // If the fetch fails due to CORS or other reasons, we can fallback to the old copy/share link behavior
-                fallbackShareLink();
-            }
-        }
+                console.error("Error downloading image via Blob:", err);
 
-        function downloadImage(blob, fileName) {
-            const tempUrl = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = tempUrl;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            window.setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(tempUrl);
-            }, 100);
-        }
-
-        function fallbackShareLink() {
-            const url = 'https://wsc-sports.video/spjro';
-            if (navigator.share) {
-                navigator.share({
-                    title: 'My 2025 F1 Season Wrap',
-                    url: url
-                }).catch(console.error);
-            } else {
-                navigator.clipboard.writeText(url);
-                alert("Image link copied to clipboard!");
+                // Mobile Fallback: If fetch fails due to CORS, opening the image directly 
+                // in a new tab allows the user to long-press and "Save Image".
+                window.open(imageUrl, '_blank');
             }
         }
 
