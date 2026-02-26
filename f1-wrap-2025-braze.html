@@ -608,9 +608,9 @@
             <div class="content">
                 <span class="subtitle" style="margin-bottom: 20px;">Average Watch time per user</span>
                 <span class="subtitle title"
-                    style="font-size: 24px; margin-bottom: 8px; font-family: var(--font-heading); background: none; padding: 0;">Singapore</span>
-                <h1 class="title">754 MINS</h1>
-                <p class="desc">That's enough time to travel from Jurong to Changi and back... 12 times.</p>
+                    style="font-size: 24px; margin-bottom: 8px; font-family: var(--font-heading); background: none; padding: 0;">{{content_blocks.${IAM-2025_F1_wrap-AverageWatchTime_Country}}}</span>
+                <h1 class="title">{{content_blocks.${IAM-2025_F1_wrap-AverageWatchTime_Minutes}}}</h1>
+                <p class="desc">{{content_blocks.${IAM-2025_F1_wrap-AverageWatchTime_Text}}}</p>
             </div>
 
             <div class="arrow-down">
@@ -630,15 +630,15 @@
 
             <div class="content">
                 <span class="subtitle">Your Commitment</span>
-                <h1 class="title">Mastering <br> Every Apex</h1>
-                <p class="desc">You lived every lap and analyzed every move of the 2025 season.</p>
+                <h1 class="title">{{content_blocks.${IAM-2025_F1_wrap-YourCommitment_Title}}}</h1>
+                <p class="desc">{{content_blocks.${IAM-2025_F1_wrap-YourCommitment_Text}}}</p>
 
                 <div class="stat-box yellow-accent">
-                    <div class="stat-number yellow">21/24</div>
+                    <div class="stat-number yellow">{{canvas_entry_properties.${races_watched}}}/24</div>
                     <div class="stat-label">Races Streamed</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-number">2055 MINS</div>
+                    <div class="stat-number">{{canvas_entry_properties.${main_race}}} MINS</div>
                     <div class="stat-label">Live Action Watched</div>
                 </div>
             </div>
@@ -652,25 +652,25 @@
 
         <!-- Slide 7: Grand Finale -->
         <section class="slide">
-            <div class="slide-bg"
-                style="background-image: url('https://braze-images.com/appboy/communication/assets/image_assets/images/699e9dc3ebc2c5006397e934/original.png?1772002754'); filter: grayscale(20%) contrast(1.2);">
-            </div>
+            {{content_blocks.${IAM-2025_F1_wrap-Archetype-Background}}}
             <div class="carbon-texture"></div>
             <div class="gradient-overlay"></div>
 
             <div class="content" style="max-width: 100%; text-align: center; transform: translateY(40px);">
                 <span class="subtitle" style="background: none; color: var(--color-white);">You Are The</span>
-                <h1 class="title gold">WORLD<br>Champion</h1>
-                <p class="desc" style="margin: 0 auto 10px auto; max-width: 300px;">Total dominance. You're in a league
-                    of your own, the undisputed king of the beIN SPORTS paddock.</p>
-
+                <h1 class="title gold">{{content_blocks.${IAM-2025_F1_wrap-Archetype-Title}}}</h1>
+                <p class="desc" style="margin: 0 auto 10px auto; max-width: 300px;">
+                    {{content_blocks.${IAM-2025_F1_wrap-Archetype-Text}}}</p>
+                {% if {{canvas_entry_properties.${ranked_percentile}}} == 100 %}
+                {% else %}
                 <div class="trophy-box">
-                    <div class="trophy-stat">TOP 5%</div>
+                    <div class="trophy-stat">TOP {{canvas_entry_properties.${ranked_percentile}}}%</div>
                     <div class="trophy-subtext">On beIN SPORTS CONNECT</div>
                 </div>
+                {% endif %}
 
                 <div class="action-buttons">
-                    <a href="https://images.beinsports.promo/2025-f1-world-champion.png" target="_blank"
+                    <a href='{{content_blocks.${IAM-2025_F1_wrap-Archetype-DownloadImageLink}}}' target="_blank"
                         style="text-decoration: none;">
                         <button class="share-btn">
                             <svg viewBox="0 0 24 24">
@@ -723,7 +723,7 @@
     <script>
         // 1. Native Download Logic
         async function downloadImage() {
-            const imageUrl = 'https://images.beinsports.promo/2025-f1-world-champion.png';
+            const imageUrl = '{{content_blocks.${IAM-2025_F1_wrap-Archetype-DownloadImageLink}}}';
             const fileName = 'My-F1-Season-Wrap-2025.png'; // Make sure this matches the image type
 
             try {
@@ -781,8 +781,8 @@
         async function shareNative() {
             const shareData = {
                 title: 'My 2025 F1 Season Wrap',
-                text: 'I was in the top 5% of fans this season on the beIN SPORTS CONNECT F1 Wrap! 🏎️🏆',
-                url: 'https://images.beinsports.promo/2025-f1-world-champion.png'
+                text: 'I was in the top {{canvas_entry_properties.${ranked_percentile}}}% of fans last season on the beIN SPORTS CONNECT F1 2025 Wrap! 🏎️🏆',
+                url: '{{content_blocks.${IAM-2025_F1_wrap-Archetype-DownloadImageLink}}}'
             };
 
             const shareMessage = `${shareData.title}\n${shareData.text}\n\n${shareData.url}`;
