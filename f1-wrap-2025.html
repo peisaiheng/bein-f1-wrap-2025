@@ -785,12 +785,14 @@
                 url: 'https://braze-images.com/appboy/communication/assets/image_assets/images/699e9db60473560063cc71b8/original.png?1772002741'
             };
 
+            const shareMessage = `${shareData.title}\n${shareData.text}\n\n${shareData.url}`;
+
             const executeFallbackCopy = () => {
                 try {
                     // Try the modern clipboard API first
                     if (navigator.clipboard && window.isSecureContext) {
-                        navigator.clipboard.writeText(shareData.url).then(() => {
-                            showToast("Link copied to clipboard!");
+                        navigator.clipboard.writeText(shareMessage).then(() => {
+                            showToast("Copied to clipboard!");
                         }).catch(() => fallbackExecCommand());
                     } else {
                         // Older execCommand fallback
@@ -804,7 +806,7 @@
             const fallbackExecCommand = () => {
                 try {
                     const textArea = document.createElement("textarea");
-                    textArea.value = shareData.url;
+                    textArea.value = shareMessage;
                     // Move it off-screen
                     textArea.style.position = "fixed";
                     textArea.style.left = "-999999px";
@@ -814,7 +816,7 @@
                     textArea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textArea);
-                    showToast("Link copied to clipboard!");
+                    showToast("Copied to clipboard!");
                 } catch (e) {
                     console.error("Exec fallback failed", e);
                 }
@@ -823,14 +825,21 @@
             try {
                 // If the device supports natural sharing
                 if (navigator.share) {
-                    await navigator.share(shareData);
+                    try {
+                        // We do a try/catch here because if the user cancels the share, 
+                        // navigator.share throws an AbortError. We don't want to fallback then.
+                        await navigator.share(shareData);
+                    } catch (shareErr) {
+                        // If it's a DOMException AbortError, they just cancelled. Do nothing.
+                        if (shareErr.name !== 'AbortError') {
+                            executeFallbackCopy();
+                        }
+                    }
                 } else {
                     executeFallbackCopy();
                 }
             } catch (err) {
                 console.error("Native share failed:", err);
-                // Braze webview might block navigator.share or the user might dismiss it resulting in an AbortError.
-                // We fallback to copying the link to the clipboard.
                 executeFallbackCopy();
             }
         }
