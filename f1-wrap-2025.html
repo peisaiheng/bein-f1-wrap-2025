@@ -402,6 +402,62 @@
             background: #cc0500;
         }
 
+        /* Quiz section */
+        .quiz-section {
+            margin-top: 25px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            pointer-events: auto;
+        }
+
+        .quiz-question {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--color-white);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quiz-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-btn:active {
+            transform: scale(0.98);
+        }
+
+        .quiz-btn.correct {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: #2ecc71;
+            color: #2ecc71;
+        }
+
+        .quiz-btn.incorrect {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
         /* Share Button (Screen 7) */
         .action-buttons {
             display: flex;
@@ -588,6 +644,18 @@
                 <span class="subtitle">Most Watched</span>
                 <h1 class="title">Abu Dhabi<br>Grand Prix</h1>
                 <p class="desc">The epic conclusion to the three-way title fight. And we were there for it!</p>
+
+                <div class="quiz-section">
+                    <div class="quiz-question">Which race is the 2nd most watched on beIN SPORTS CONNECT?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="handleQuiz(this, 'BELGIAN GRAND PRIX')">BELGIAN GRAND
+                            PRIX</button>
+                        <button class="quiz-btn" onclick="handleQuiz(this, 'SINGAPORE GRAND PRIX')">SINGAPORE GRAND
+                            PRIX</button>
+                        <button class="quiz-btn" onclick="handleQuiz(this, 'MONACO GRAND PRIX')">MONACO GRAND
+                            PRIX</button>
+                    </div>
+                </div>
             </div>
 
             <div class="arrow-down">
@@ -774,6 +842,37 @@
                 setTimeout(() => {
                     toast.classList.remove("show");
                 }, 3000);
+            }
+        }
+
+        // Quiz Handling
+        function handleQuiz(button, answer) {
+            const optionsContainer = button.parentElement;
+            if (optionsContainer.classList.contains('answered')) return;
+
+            optionsContainer.classList.add('answered');
+
+            const buttons = optionsContainer.querySelectorAll('.quiz-btn');
+            buttons.forEach(btn => {
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'default';
+                btn.onclick = null;
+            });
+
+            button.style.opacity = '1';
+
+            if (answer === 'BELGIAN GRAND PRIX') {
+                button.classList.add('correct');
+                showToast("Correct! Belgium GP at Spa was the 2nd most watched.");
+            } else {
+                button.classList.add('incorrect');
+                showToast("Almost! Belgium GP at Spa was the 2nd most watched.");
+                buttons.forEach(btn => {
+                    if (btn.innerText.includes('BELGIAN')) {
+                        btn.style.opacity = '1';
+                        btn.classList.add('correct');
+                    }
+                });
             }
         }
 
