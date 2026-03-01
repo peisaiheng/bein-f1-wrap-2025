@@ -294,7 +294,8 @@
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
             border: 1px solid rgba(255, 215, 0, 0.4);
             padding: 30px 20px;
-            margin-top: 20px;
+            margin: 20px auto 0 auto;
+            max-width: 300px;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 12px;
@@ -538,6 +539,14 @@
 
             .content {
                 padding-right: 15px;
+            }
+        }
+
+        /* Tablet Landscape */
+        @media (min-width: 768px) and (orientation: landscape) {
+            .slide-bg {
+                background-size: contain;
+                background-repeat: no-repeat;
             }
         }
     </style>
