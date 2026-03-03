@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>2025 F1 Season Wrap</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;700;800&family=League+Spartan:wght@800;900&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            /* Color Palette */
+            --color-bg-darker: #050505;
+            --color-bg-dark: #111111;
+            --color-f1-red: #E10600;
+            --color-f1-red-glow: rgba(225, 6, 0, 0.4);
+            --color-f1-yellow: #FFDF0B;
+            --color-white: #FFFFFF;
+            --color-grey: #A0A0A0;
+
+            /* Typography */
+            --font-heading: 'League Spartan', sans-serif;
+            --font-body: 'Albert Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--color-bg-darker);
+            color: var(--color-white);
+            font-family: var(--font-body);
+            overflow: hidden;
+            /* Prevent iOS rubber banding */
+            overscroll-behavior-y: none;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Top Bar / Close Button */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 24px;
+            display: flex;
+            justify-content: flex-end;
+            z-index: 100;
+            pointer-events: none;
+            /* Let clicks pass through except on btn */
+        }
+
+        .skip-btn {
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-white);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: var(--font-body);
+            font-weight: 800;
+            font-size: 13px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .skip-btn:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.95);
+        }
+
+        /* Pagination Dots */
+        .pagination {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dot.active {
+            background: var(--color-f1-yellow);
+            height: 24px;
+            border-radius: 4px;
+            box-shadow: 0 0 8px rgba(255, 223, 11, 0.4);
+        }
+
+        /* Scroll Container (Snap Logic) */
+        .scroll-container {
+            height: 100vh;
+            height: 100dvh;
+            /* For mobile browsers with dynamic UI */
+            width: 100vw;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Slide Styles */
+        .slide {
+            height: 100vh;
+            height: 100dvh;
+            width: 100vw;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px 30px 100px 30px;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--color-bg-darker);
+        }
+
+        /* Dark Gradient & Carbon Textures */
+        .carbon-texture {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+                linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+                linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+                linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+                linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+                linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424 100%),
+                #131313;
+            background-size: 20px 20px;
+            opacity: 0.3;
+            z-index: 1;
+            mix-blend-mode: multiply;
+        }
+
+        .gradient-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, var(--color-bg-darker) 0%, rgba(5, 5, 5, 0.7) 40%, rgba(5, 5, 5, 0.2) 100%);
+            z-index: 2;
+        }
+
+        .slide-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center top;
+            z-index: 0;
+            filter: grayscale(20%) contrast(1.1);
+        }
+
+        .video-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            filter: grayscale(20%) contrast(1.1);
+        }
+
+        /* Content Styling */
+        .content {
+            position: relative;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition-delay: 0.2s;
+            max-width: 400px;
+        }
+
+        .slide.is-visible .content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .subtitle {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--color-f1-yellow);
+            margin-bottom: 12px;
+            display: inline-block;
+            background: rgba(255, 223, 11, 0.1);
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .title {
+            font-family: var(--font-heading);
+            font-size: 48px;
+            line-height: 0.9;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: var(--color-white);
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            word-wrap: break-word;
+        }
+
+        .title.red {
+            color: var(--color-f1-red);
+            text-shadow: 0 0 20px var(--color-f1-red-glow);
+        }
+
+        .title.yellow {
+            color: var(--color-f1-yellow);
+            text-shadow: 0 0 20px rgba(255, 223, 11, 0.3);
+        }
+
+        .title.gold {
+            color: #FFD700;
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            font-size: 52px;
+        }
+
+        .desc {
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--color-f1-red);
+            padding: 16px 20px;
+            margin-top: 24px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .stat-box.yellow-accent {
+            border-left-color: var(--color-f1-yellow);
+        }
+
+        .stat-number {
+            font-family: var(--font-heading);
+            font-size: 42px;
+            color: var(--color-white);
+            line-height: 1;
+        }
+
+        .stat-number.yellow {
+            color: var(--color-f1-yellow);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 6px;
+            color: var(--color-grey);
+        }
+
+        .trophy-box {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            padding: 30px 20px;
+            margin: 20px auto 0 auto;
+            max-width: 300px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        .trophy-stat {
+            font-family: var(--font-heading);
+            font-size: 52px;
+            color: #FFD700;
+            line-height: 1;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .trophy-subtext {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            color: var(--color-white);
+            opacity: 0.9;
+        }
+
+        /* Scroll indicator / Arrow */
+        .arrow-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            animation: bounce 2.5s infinite;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            opacity: 0;
+            transition: opacity 0.5s ease 0.8s;
+        }
+
+        .slide.is-visible .arrow-down {
+            opacity: 1;
+        }
+
+        .arrow-down svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: var(--color-white);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translate(-50%, 0);
+            }
+
+            40% {
+                transform: translate(-50%, -10px);
+            }
+
+            60% {
+                transform: translate(-50%, -5px);
+            }
+        }
+
+        /* CTA Button (Last screen) */
+        .cta-btn {
+            display: inline-block;
+            background: var(--color-f1-red);
+            color: var(--color-white);
+            padding: 16px 32px;
+            font-family: var(--font-body);
+            font-weight: 800;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 30px;
+            margin-top: 30px;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            transition: transform 0.2s ease, background 0.2s ease;
+            box-shadow: 0 8px 20px var(--color-f1-red-glow);
+        }
+
+        .cta-btn:active {
+            transform: scale(0.96);
+            background: #cc0500;
+        }
+
+        /* Quiz section */
+        .quiz-section {
+            margin-top: 25px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            pointer-events: auto;
+        }
+
+        .quiz-question {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--color-white);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quiz-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-btn:active {
+            transform: scale(0.98);
+        }
+
+        .quiz-btn.correct {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: #2ecc71;
+            color: #2ecc71;
+        }
+
+        .quiz-btn.incorrect {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        /* Share Button (Screen 7) */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--color-white);
+            padding: 14px 28px;
+            font-family: var(--font-body);
+            font-weight: 800;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 30px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
+        }
+
+        .share-btn:active {
+            transform: scale(0.96);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .share-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* Toast Notification */
+        .toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: rgba(22, 22, 22, 0.95);
+            color: var(--color-white);
+            text-align: center;
+            border-radius: 30px;
+            padding: 12px 20px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease, bottom 0.3s ease, visibility 0.3s ease;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        /* Smaller screens adjustment */
+        @media (max-width: 375px) {
+            .title {
+                font-size: 44px;
+            }
+
+            .content {
+                padding-right: 15px;
+            }
+        }
+
+        /* Tablet Landscape */
+        @media (min-width: 768px) and (orientation: landscape) {
+            .slide-bg {
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Global Top Bar -->
+    <div class="top-bar">
+        <!-- data-skip-slideNumber is actively updated via JS for tracking -->
+        <button class="skip-btn" onclick="closeBrazeMessage()" data-skip-slideNumber="1">Skip</button>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+
+    <!-- Main Scroll Container -->
+    <main class="scroll-container">
+
+        <!-- Slide 1: Cover -->
+        <section class="slide is-visible">
+            <div class="slide-bg"
+                style="background-image: url('https://braze-images.com/appboy/communication/assets/image_assets/images/69a66b7f5539cd0063ddf572/original.png?1772514174'); filter: grayscale(20%) contrast(1.2);">
+            </div>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">Fueling the Passion</span>
+                <h1 class="title">Your F1® 2025 Season Wrap</h1>
+                <p class="desc">Before we head Down Under. Here's a look back at the moments that defined your 2025
+                    season.</p>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 2: Most Watched -->
+        <section class="slide">
+            <div class="slide-bg"
+                style="background-image: url('https://braze-images.com/appboy/communication/assets/image_assets/images/69a66b7fb01c2700631bf425/original.png?1772514174'); filter: grayscale(20%) contrast(1.2);">
+            </div>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">Most Watched</span>
+                <h1 class="title">Abu Dhabi<br>Grand Prix</h1>
+                <p class="desc">The epic conclusion to the three-way title fight. And we were there for it!</p>
+
+                <div class="quiz-section">
+                    <div class="quiz-question">Which race was the 2nd most watched on beIN SPORTS CONNECT?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="handleQuiz(this, 'AUSTRALIAN GRAND PRIX')">AUSTRALIAN GRAND
+                            PRIX</button>
+                        <button class="quiz-btn" onclick="handleQuiz(this, 'BRITISH GRAND PRIX')">BRITISH GRAND
+                            PRIX</button>
+                        <button class="quiz-btn" onclick="handleQuiz(this, 'SINGAPORE GRAND PRIX')">SINGAPORE GRAND
+                            PRIX</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 3: Total Streaming Hours -->
+        <section class="slide">
+            <div class="slide-bg"
+                style="background-image: url('https://braze-images.com/appboy/communication/assets/image_assets/images/69a67fc713dfcf00630ce25a/original.png?1772519366'); filter: grayscale(20%) contrast(1.2);">
+            </div>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">Total Streaming Hours</span>
+                <h1 class="title red" id="hours-counter" data-target="1185000">0</h1>
+                <p class="desc">hours of Formula 1® streamed by fans like you. That's over 54.1 million laps around
+                    Monza at Max Verstappen's 2025 record-breaking pole position pace.</p>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+
+        <!-- Slide 4: User Stats -->
+        <section class="slide">
+            <div class="slide-bg"
+                style="background-image: url('https://braze-images.com/appboy/communication/assets/image_assets/images/69a67fc69918200063c959f9/original.png?1772519365'); filter: grayscale(20%) contrast(1.2);">
+            </div>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">Your Commitment</span>
+                <h1 class="title">{{content_blocks.${IAM-2025_F1_wrap-YourCommitment_Title}}}</h1>
+                <p class="desc">{{content_blocks.${IAM-2025_F1_wrap-YourCommitment_Text}}}</p>
+
+                <div class="stat-box yellow-accent">
+                    <div class="stat-number yellow">{{canvas_entry_properties.${races_watched}}}/24</div>
+                    <div class="stat-label">Races Streamed</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">{{canvas_entry_properties.${main_race}}} MINS</div>
+                    <div class="stat-label">Live Action Watched</div>
+                </div>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 5: Grand Finale -->
+        <section class="slide">
+            {{content_blocks.${IAM-2025_F1_wrap-Archetype-Background}}}
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content" style="max-width: 100%; text-align: center; transform: translateY(40px);">
+                <span class="subtitle" style="background: none; color: var(--color-white);">You Are The</span>
+                <h1 class="title gold">{{content_blocks.${IAM-2025_F1_wrap-Archetype-Title}}}</h1>
+                <p class="desc" style="margin: 0 auto 10px auto; max-width: 300px;">
+                    {{content_blocks.${IAM-2025_F1_wrap-Archetype-Text}}}</p>
+                {% if {{canvas_entry_properties.${ranked_percentile}}} == 100 %}
+                {% else %}
+                <div class="trophy-box">
+                    <div class="trophy-stat">TOP {{canvas_entry_properties.${ranked_percentile}}}%</div>
+                    <div class="trophy-subtext">On beIN SPORTS CONNECT</div>
+                </div>
+                {% endif %}
+
+                <div class="action-buttons">
+                    <a href='{{content_blocks.${IAM-2025_F1_wrap-Archetype-DownloadImageLink}}}?abExternalOpen=true'
+                        target="_blank" style="text-decoration: none;">
+                        <button class="share-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                            </svg>
+                            Download Image
+                        </button>
+                    </a>
+                    <button class="share-btn" onclick="shareNative()">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z" />
+                        </svg>
+                        Share
+                    </button>
+                </div>
+            </div>
+
+            <div class="arrow-down">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 6: Outro -->
+        <section class="slide">
+            <div class="slide-bg"
+                style="background-image: url('https://braze-images.com/appboy/communication/assets/image_assets/images/69a68206dcdff20063349f92/original.png?1772519942'); filter: grayscale(20%) contrast(1.2);">
+            </div>
+            <div class="carbon-texture"></div>
+            <div class="gradient-overlay"></div>
+
+            <div class="content">
+                <span class="subtitle">The Future is Now</span>
+                <h1 class="title">Ready For<br>2026?</h1>
+                <p class="desc">New aerodynamic regulations. 100% sustainable fuels. A whole new era of Formula 1
+                    awaits.</p>
+
+                <button class="cta-btn"
+                    onclick="window.location.href='apac://connect.beinsports.com/competition/formula-1'">Lights Out
+                    Soon</button>
+            </div>
+        </section>
+
+        <!-- Toast UI -->
+        <div id="toast" class="toast"></div>
+
+    </main>
+
+    <!-- JavaScript block -->
+    <script>
+        // 1. Native Download Logic
+        async function downloadImage() {
+            const imageUrl = '{{content_blocks.${IAM-2025_F1_wrap-Archetype-DownloadImageLink}}}';
+            const fileName = 'My-F1-Season-Wrap-2025.png'; // Make sure this matches the image type
+
+            try {
+                // Fetch the image as a blob to ensure we get the file locally first
+                const response = await fetch(imageUrl, {
+                    // Note: Depending on server config, 'no-cors' might prevent reading the blob properly.
+                    // If so, the fallback window.open will trigger. 
+                    mode: 'cors'
+                });
+
+                if (!response.ok) throw new Error("Network response was not ok");
+
+                const blob = await response.blob();
+
+                // Create a temporary object URL for the blob
+                const tempUrl = URL.createObjectURL(blob);
+
+                // Create an invisible anchor element to trigger the download
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = tempUrl;
+                a.download = fileName; // The download attribute forces the browser to save it
+
+                document.body.appendChild(a);
+                a.click(); // Trigger the download
+
+                // Keep the document clean
+                window.setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(tempUrl);
+                }, 100);
+
+            } catch (err) {
+                console.error("Error downloading image via Blob:", err);
+
+                // Mobile Fallback: If fetch fails due to CORS, opening the image directly 
+                // in a new tab allows the user to long-press and "Save Image".
+                window.open(imageUrl, '_blank');
+            }
+        }
+
+        // Helper to show custom toast message since alert() is blocked in some WebViews
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            if (toast) {
+                toast.innerText = message;
+                toast.classList.add("show");
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 3000);
+            }
+        }
+
+        // Quiz Handling
+        function handleQuiz(button, answer) {
+            const optionsContainer = button.parentElement;
+            if (optionsContainer.classList.contains('answered')) return;
+
+            optionsContainer.classList.add('answered');
+
+            const buttons = optionsContainer.querySelectorAll('.quiz-btn');
+            buttons.forEach(btn => {
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'default';
+                btn.onclick = null;
+            });
+
+            button.style.opacity = '1';
+
+            if (answer === 'AUSTRALIAN GRAND PRIX') {
+                button.classList.add('correct');
+                showToast("Correct! Australian GP was the 2nd most watched.");
+            } else {
+                button.classList.add('incorrect');
+                showToast("Almost! The Australian GP takes 2nd place.");
+                buttons.forEach(btn => {
+                    if (btn.innerText.includes('AUSTRALIAN')) {
+                        btn.style.opacity = '1';
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+        }
+
+        // 2. Native Share API
+        async function shareNative() {
+            const shareData = {
+                title: 'My 2025 F1 Season Wrap',
+                text: 'I was the {{canvas_entry_properties.${ranked_title}}} last season on the beIN SPORTS CONNECT F1 2025 Wrap! 🏎️🏆',
+                url: '{{content_blocks.${IAM-2025_F1_wrap-Archetype-DownloadImageLink}}}'
+            };
+
+            const shareMessage = `${shareData.title}\n${shareData.text}\n\n${shareData.url}`;
+
+            const executeFallbackCopy = () => {
+                try {
+                    // Try the modern clipboard API first
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(shareMessage).then(() => {
+                            showToast("Copied to clipboard!");
+                        }).catch(() => fallbackExecCommand());
+                    } else {
+                        // Older execCommand fallback
+                        fallbackExecCommand();
+                    }
+                } catch (e) {
+                    console.error("Clipboard copy failed", e);
+                }
+            };
+
+            const fallbackExecCommand = () => {
+                try {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = shareMessage;
+                    // Move it off-screen
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-999999px";
+                    textArea.style.top = "-999999px";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showToast("Copied to clipboard!");
+                } catch (e) {
+                    console.error("Exec fallback failed", e);
+                }
+            };
+
+            try {
+                // If the device supports natural sharing
+                if (navigator.share) {
+                    try {
+                        // We do a try/catch here because if the user cancels the share, 
+                        // navigator.share throws an AbortError. We don't want to fallback then.
+                        await navigator.share(shareData);
+                    } catch (shareErr) {
+                        // If it's a DOMException AbortError, they just cancelled. Do nothing.
+                        if (shareErr.name !== 'AbortError') {
+                            executeFallbackCopy();
+                        }
+                    }
+                } else {
+                    executeFallbackCopy();
+                }
+            } catch (err) {
+                console.error("Native share failed:", err);
+                executeFallbackCopy();
+            }
+        }
+
+        // 3. Close Window Logic (Braze specific)
+        function closeBrazeMessage() {
+            if (window.brazeBridge) {
+                // Native App environment
+                brazeBridge.closeMessage();
+            } else {
+                // Fallback for browser testing
+                document.documentElement.remove();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.scroll-container');
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            const skipBtn = document.querySelector('.skip-btn');
+            const arrows = document.querySelectorAll('.arrow-down');
+
+            // 2. Intersection Observer to detect which slide is active
+            const observerOptions = {
+                root: container,
+                rootMargin: '0px',
+                threshold: 0.6 // Slide becomes active when 60% visible
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const index = Array.from(slides).indexOf(entry.target);
+
+                        // Add animation class
+                        entry.target.classList.add('is-visible');
+
+                        // Update pagination
+                        dots.forEach(dot => dot.classList.remove('active'));
+                        if (dots[index]) {
+                            dots[index].classList.add('active');
+                        }
+
+                        // Update skip tracking attribute
+                        skipBtn.setAttribute('data-skip-slideNumber', index + 1);
+
+                        // If last slide, change Skip to Close
+                        if (index === slides.length - 1) {
+                            skipBtn.textContent = 'Close';
+                            // Optionally hide pagination on last slide
+                            document.querySelector('.pagination').style.opacity = '0';
+                        } else {
+                            skipBtn.textContent = 'Skip';
+                            document.querySelector('.pagination').style.opacity = '1';
+                        }
+
+                        // Animate counter if present on the current slide and hasn't animated yet
+                        const counter = entry.target.querySelector('#hours-counter');
+                        if (counter && !counter.classList.contains('animated')) {
+                            counter.classList.add('animated');
+                            animateCounter(counter);
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            slides.forEach(slide => observer.observe(slide));
+
+            // 3. Arrow Down Click Navigation
+            arrows.forEach((arrow, index) => {
+                arrow.addEventListener('click', () => {
+                    if (slides[index + 1]) {
+                        // Use smooth scrolling native behavior configured in CSS
+                        slides[index + 1].scrollIntoView();
+                    }
+                });
+            });
+
+            // 4. Counter Animation Function
+            function animateCounter(element) {
+                const target = +element.getAttribute('data-target');
+                const duration = 2000; // Animation duration in ms
+                const start = 0;
+                let startTime = null;
+
+                function animation(currentTime) {
+                    if (startTime === null) startTime = currentTime;
+                    const timeElapsed = currentTime - startTime;
+                    const r = Math.min(timeElapsed / duration, 1);
+
+                    // Use easeOutExponetial approach for a rolling counter feel
+                    const easeOutQuad = r === 1 ? 1 : 1 - Math.pow(2, -10 * r);
+                    const currentVal = Math.floor(easeOutQuad * (target - start) + start);
+
+                    element.innerHTML = currentVal.toLocaleString();
+
+                    if (timeElapsed < duration) {
+                        requestAnimationFrame(animation);
+                    } else {
+                        element.innerHTML = target.toLocaleString();
+                    }
+                }
+
+                requestAnimationFrame(animation);
+            }
+        });
+    </script>
+</body>
+
+</html>
